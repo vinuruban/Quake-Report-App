@@ -15,10 +15,16 @@
  */
 package com.example.android.quakereport;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -32,8 +38,18 @@ public class EarthquakeActivity extends AppCompatActivity {
         // Create a fake list of earthquakes.
         ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
 
-        EarthquakeAdapter adapter = new EarthquakeAdapter(this, earthquakes);
+        final EarthquakeAdapter adapter = new EarthquakeAdapter(this, earthquakes);
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
         earthquakeListView.setAdapter(adapter);
+
+        earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            // The code in this method will be executed when the numbers category is clicked on.
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Earthquake currentEarthquake = adapter.getItem(position); //the 'adapter' refers to "final EarthquakeAdapter adapter = new EarthquakeAdapter(this, earthquakes);" above
+                Intent implicit = new Intent(Intent.ACTION_VIEW, Uri.parse(currentEarthquake.getUrl()));
+                startActivity(implicit);
+            }
+        });
     }
 }

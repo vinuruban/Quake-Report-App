@@ -6,7 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class QueryUtils {
     /**
@@ -57,11 +60,41 @@ public class QueryUtils {
                 JSONObject currentEarthquake = earthquakeArray.getJSONObject(i);
                 JSONObject propertiesObj = currentEarthquake.getJSONObject("properties");
 
-                String mag = propertiesObj.getString("mag");
-                String place = propertiesObj.getString("place");
-                String time = propertiesObj.getString("time");
+                double mag = propertiesObj.getDouble("mag");
+                DecimalFormat formatter = new DecimalFormat("0.0");
+                String magnitude = formatter.format(mag);
 
-                earthquakes.add(new Earthquake(mag, place, time));
+                //split text if it contains "of"
+                String place = propertiesObj.getString("place");
+                String[] temp;
+                String distance;
+                String location;
+                if (place.contains("of")) {
+                    temp = place.split("(?<=of)");
+                    distance = temp[0];
+                    location = temp[1];
+                }
+                else {
+                    distance = "";
+                    location = place;
+                }
+
+                //coverts the int into a proper date
+                long date = propertiesObj.getLong("time");
+                Date dateObject = new Date(date);
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM DD, yyyy");
+                String dateToDisplay = dateFormatter.format(dateObject);
+
+                //coverts the int into a proper date
+                long time = propertiesObj.getLong("time");
+                Date timeObject = new Date(time);
+                SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm a");
+                String timeToDisplay = timeFormatter.format(timeObject);
+
+                //get URL
+                String url = propertiesObj.getString("url");
+
+                earthquakes.add(new Earthquake(magnitude, distance, location, dateToDisplay, timeToDisplay, url));
 
                 //below is the another method to create earthquake object
 //                // tmp hash map for single contact
