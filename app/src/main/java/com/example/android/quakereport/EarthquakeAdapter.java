@@ -12,8 +12,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
-    public EarthquakeAdapter(Activity context, ArrayList<Earthquake> words) {
-        super(context, 0, words);
+    public EarthquakeAdapter(Activity context, ArrayList<Earthquake> earthquakes) {
+        super(context, 0, earthquakes);
     }
 
     @Override
