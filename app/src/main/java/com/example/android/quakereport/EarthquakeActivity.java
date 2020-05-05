@@ -44,7 +44,7 @@ public class EarthquakeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
 
-        // Create a new adapter that takes an empty list of earthquakes as input
+        // Create a new adapter that takes an EMPTY list of earthquakes as input
         adapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
 
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
@@ -52,6 +52,10 @@ public class EarthquakeActivity extends AppCompatActivity {
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
         earthquakeListView.setAdapter(adapter);
+
+        // Start the AsyncTask to fetch the earthquake data
+        EarthquakeAsyncTask task = new EarthquakeAsyncTask();
+        task.execute(USGS_REQUEST_URL); // this passes in the USGS_REQUEST_URL url into the EarthquakeAsyncTask class and the work is done in the bg there!
 
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             // The code in this method will be executed when the numbers category is clicked on.
@@ -62,10 +66,6 @@ public class EarthquakeActivity extends AppCompatActivity {
                 startActivity(implicit);
             }
         });
-
-        // Start the AsyncTask to fetch the earthquake data
-        EarthquakeAsyncTask task = new EarthquakeAsyncTask();
-        task.execute(USGS_REQUEST_URL); // this passes in the USGS_REQUEST_URL url into the EarthquakeAsyncTask class and the work is done in the bg there!
 
     }
 
@@ -91,7 +91,7 @@ public class EarthquakeActivity extends AppCompatActivity {
             // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
             // data set. This will trigger the ListView to update.
             if (data != null && !data.isEmpty()) {
-                adapter.addAll(data);
+                adapter.addAll(data); //remember, we earlier passed an empty list into the adapter (" adapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>()); "). Now, we add all the data into the adapter.
             }
         }
 
