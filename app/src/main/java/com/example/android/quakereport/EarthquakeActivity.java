@@ -81,7 +81,6 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         // Get details on the currently active default data network
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        Log.e(LOG_TAG, "Passesasdasdasd" +networkInfo);
 
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
