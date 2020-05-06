@@ -21,6 +21,8 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -70,14 +72,38 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         // so the list can be populated in the user interface
         earthquakeListView.setAdapter(adapter);
 
-        // Get a reference to the LoaderManager, in order to interact with loaders.
-        LoaderManager loaderManager = getLoaderManager();
-        // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-        // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-        // because this activity implements the LoaderCallbacks interface).
-        loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);//EARTHQUAKE_LOADER_ID is a unique identifier and if this wasn't called before, a new EarthquakeLoader will be created (at EarthquakeActivity build). However, if the EARTHQUAKE_LOADER_ID was already executed, then a new EarthquakeLoader WON'T be created if EarthquakeActivity restarts!!
-        //so the above and onCreateLoader creates a new EarthquakeLoader only if it wasn't before! It get ignored otherwise
-        Log.e(LOG_TAG, "Passes initLoader");
+        //Below is the view that will be viewed if there is no internet connection or no data retrieved
+        emptyStateTextView = (TextView) findViewById(R.id.empty_view);
+        earthquakeListView.setEmptyView(emptyStateTextView);
+
+        // Get a reference to the ConnectivityManager to check state of network connectivity
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        // Get details on the currently active default data network
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        Log.e(LOG_TAG, "Passesasdasdasd" +networkInfo);
+
+        // If there is a network connection, fetch data
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+            // Get a reference to the LoaderManager, in order to interact with loaders.
+            LoaderManager loaderManager = getLoaderManager();
+            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
+            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
+            // because this activity implements the LoaderCallbacks interface).
+            loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);//EARTHQUAKE_LOADER_ID is a unique identifier and if this wasn't called before, a new EarthquakeLoader will be created (at EarthquakeActivity build). However, if the EARTHQUAKE_LOADER_ID was already executed, then a new EarthquakeLoader WON'T be created if EarthquakeActivity restarts!!
+            //so the above and onCreateLoader creates a new EarthquakeLoader only if it wasn't there before! It gets ignored otherwise
+            Log.e(LOG_TAG, "Passes initLoader");
+        } else {
+            // Otherwise, display error
+            // First, hide loading indicator so error message will be visible
+            View loadingIndicator = findViewById(R.id.loading_indicator);
+            loadingIndicator.setVisibility(View.GONE);
+
+            // Update empty state with no connection error message
+            emptyStateTextView.setText(R.string.no_internet_connection);
+        }
+
+
 
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             // The code in this method will be executed when the numbers category is clicked on.
@@ -88,9 +114,6 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
                 startActivity(implicit);
             }
         });
-
-        emptyStateTextView = (TextView) findViewById(R.id.empty_view);
-        earthquakeListView.setEmptyView(emptyStateTextView);
 
     }
 
@@ -105,8 +128,12 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakes) {
         Log.e(LOG_TAG, "Passes onLoadFinished");
 
+        // Hide loading indicator because the data has been loaded
+        View loadingIndicator = findViewById(R.id.loading_indicator);
+        loadingIndicator.setVisibility(View.GONE);
+
         // Set empty state text to display "No earthquakes found."
-        emptyStateTextView.setText(R.string.no_earthquakes); //when no data (earthquakes object) is returned, empty_view TextView will become visible. Don't worry about how the code works, ie. how it becomes visible
+        emptyStateTextView.setText(R.string.no_earthquakes); //when no data (earthquakes object) is returned, empty_view TextView will become visible. Don't worry about how the code works, ie. how it becomes visible, how it knows all data is captured for the adapter.
 
         // Clear the adapter of previous earthquake data
         adapter.clear();

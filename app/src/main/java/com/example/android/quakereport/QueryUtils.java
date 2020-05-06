@@ -36,6 +36,14 @@ public class QueryUtils {
      */
 
     public static List<Earthquake> fetchEarthquakeData(String requestUrl) {
+
+        //Below is the code to sleep. Used to check the ProgressBar!
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
         // Create URL object
         URL url = createUrl(requestUrl);
 
